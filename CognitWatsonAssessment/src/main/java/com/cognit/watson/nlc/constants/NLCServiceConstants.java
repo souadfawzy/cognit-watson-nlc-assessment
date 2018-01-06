@@ -8,7 +8,7 @@ package com.cognit.watson.nlc.constants;
 public interface NLCServiceConstants {
 	
 	/* classifier created and trained  */
-	public static final String CLASSIFIER_ID = "e554c3x251-nlc-174120";
+	public static final String CLASSIFIER_ID = "c18f02x258-nlc-5607";
 	
 	/*NLC Service credentials to can use it  */
 	public static final String USER_NAME = "6f934dc2-304b-4853-a139-acfe623ac23d";
