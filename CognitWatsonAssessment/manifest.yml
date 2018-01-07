@@ -1,0 +1,8 @@
+---
+applications:
+- name: CognitWatsonAssessment
+  memory: 512M
+  host: CognitWatsonAssessment
+  domain: eu-gb.mybluemix.net
+  services:
+  - Natural Language Classifier-s0
