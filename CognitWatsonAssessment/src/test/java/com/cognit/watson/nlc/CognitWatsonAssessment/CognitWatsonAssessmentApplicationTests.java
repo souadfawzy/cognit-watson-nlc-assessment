@@ -57,4 +57,15 @@ public class CognitWatsonAssessmentApplicationTests {
 		
 
 	}
+	
+	/**
+	 * Test Create new classifier by provide classifier name and training data 
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldReturnClassifierCreatedId() throws Exception {
+		
+		//watsonNLCservice.createClassifier("NLC-tes","");
+	}
 }
