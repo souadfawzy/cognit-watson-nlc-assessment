@@ -5,6 +5,7 @@ import java.io.File;
 import org.springframework.stereotype.Service;
 
 import com.cognit.watson.nlc.constants.NLCServiceConstants;
+import com.cognit.watson.nlc.utilities.Validator;
 import com.ibm.watson.developer_cloud.natural_language_classifier.v1.NaturalLanguageClassifier;
 import com.ibm.watson.developer_cloud.natural_language_classifier.v1.model.Classification;
 import com.ibm.watson.developer_cloud.natural_language_classifier.v1.model.Classifier;
@@ -26,21 +27,23 @@ public class WatsonNLCService {
 	 */
 	public String classifyQuestion(String textToClassify) throws Exception {
 
-		/*
-		 * Instantiates a new natural language service by username and password
-		 * service credentials
-		 */
-		NaturalLanguageClassifier service = new NaturalLanguageClassifier();
-		service.setUsernameAndPassword(NLCServiceConstants.USER_NAME, NLCServiceConstants.PASSWORD);
-		/*
-		 * Returns classification Details for a question as JSON but only we
-		 * need topclass value
-		 */
-		Classification classification = service.classify(NLCServiceConstants.CLASSIFIER_ID, textToClassify).execute();
-		if (classification != null && classification.getTopClass() != null && !classification.getTopClass().isEmpty()) {
-			return classification.getTopClass();
+		if (!Validator.isEmptyOrNull(textToClassify)) {
+			/*
+			 * Instantiates a new natural language service by username and
+			 * password service credentials
+			 */
+			NaturalLanguageClassifier service = new NaturalLanguageClassifier();
+			service.setUsernameAndPassword(NLCServiceConstants.USER_NAME, NLCServiceConstants.PASSWORD);
+			/*
+			 * Returns classification Details for a question as JSON but only we
+			 * need topclass value
+			 */
+			Classification classification = service.classify(NLCServiceConstants.CLASSIFIER_ID, textToClassify)
+					.execute();
+			if (classification != null && !Validator.isEmptyOrNull(classification.getTopClass())) {
+				return classification.getTopClass();
+			}
 		}
-
 		return null;
 	}
 
@@ -56,14 +59,17 @@ public class WatsonNLCService {
 	 */
 	public String createClassifier(String classifierName, String trainingFilePath) throws Exception {
 
-		NaturalLanguageClassifier service = new NaturalLanguageClassifier();
-		service.setUsernameAndPassword(NLCServiceConstants.USER_NAME, NLCServiceConstants.PASSWORD);
+		if (!Validator.isEmptyOrNull(classifierName) && !Validator.isEmptyOrNull(trainingFilePath)) {
 
-		Classifier classifier = service.createClassifier(classifierName, "en", new File(trainingFilePath)).execute();
-		if (classifier != null) {
-			return classifier.getId();
+			NaturalLanguageClassifier service = new NaturalLanguageClassifier();
+			service.setUsernameAndPassword(NLCServiceConstants.USER_NAME, NLCServiceConstants.PASSWORD);
+
+			Classifier classifier = service.createClassifier(classifierName, "en", new File(trainingFilePath))
+					.execute();
+			if (classifier != null) {
+				return classifier.getId();
+			}
 		}
-
 		return null;
 
 	}
@@ -76,9 +82,10 @@ public class WatsonNLCService {
 	 * @throws Exception
 	 */
 	public void deleteClassifier(String classifierId) throws Exception {
-		NaturalLanguageClassifier service = new NaturalLanguageClassifier();
-		service.setUsernameAndPassword(NLCServiceConstants.USER_NAME, NLCServiceConstants.PASSWORD);
-		service.deleteClassifier(classifierId);
-
+		if (!Validator.isEmptyOrNull(classifierId)) {
+			NaturalLanguageClassifier service = new NaturalLanguageClassifier();
+			service.setUsernameAndPassword(NLCServiceConstants.USER_NAME, NLCServiceConstants.PASSWORD);
+			service.deleteClassifier(classifierId);
+		}
 	}
 }

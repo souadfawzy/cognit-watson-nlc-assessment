@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cognit.watson.nlc.service.WatsonNLCService;
+import com.cognit.watson.nlc.utilities.Validator;
 
 /**
  * @author Souad
@@ -24,7 +25,7 @@ public class WatsonNLCController {
 
 	/**
 	 * @param model
-	 * @return home page 
+	 * @return home page
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String welcome(Model model) {
@@ -37,13 +38,12 @@ public class WatsonNLCController {
 	 * 
 	 * @param model
 	 * @param question
-	 * @return view 
+	 * @return view
 	 */
 	@RequestMapping(value = "/", method = RequestMethod.POST)
 	public String classifyQuestion(Map<String, Object> model, @RequestParam String question) {
 		try {
-			if (!question.isEmpty() && question != null) {
-
+			if (!Validator.isEmptyOrNull(question)) {
 				model.put("classifierClass", WatsonNLCService.classifyQuestion(question));
 			}
 
@@ -63,12 +63,11 @@ public class WatsonNLCController {
 	 */
 	@RequestMapping(value = "/ajax", method = RequestMethod.POST)
 	public @ResponseBody String classifyQuestionAjax(Map<String, Object> model, @RequestParam String question) {
-		String classifierClass= null;
+		String classifierClass = null;
 		try {
-			if (!question.isEmpty() && question != null)
-
+			if (!Validator.isEmptyOrNull(question)) {
 				classifierClass = WatsonNLCService.classifyQuestion(question);
-
+			}
 		} catch (Exception e) {
 			model.put("errorMessage", e.getMessage());
 		}
