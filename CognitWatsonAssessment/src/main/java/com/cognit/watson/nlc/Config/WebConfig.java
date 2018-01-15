@@ -10,6 +10,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     /* (non-Javadoc)
      * @see org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter#addResourceHandlers(org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry)
      * add configuration to can use webjars client side dependencies 
+     * Resource handler configuration
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

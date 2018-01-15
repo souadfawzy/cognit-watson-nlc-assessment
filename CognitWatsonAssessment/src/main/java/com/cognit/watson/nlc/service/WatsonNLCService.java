@@ -9,6 +9,7 @@ import com.cognit.watson.nlc.utilities.Validator;
 import com.ibm.watson.developer_cloud.natural_language_classifier.v1.NaturalLanguageClassifier;
 import com.ibm.watson.developer_cloud.natural_language_classifier.v1.model.Classification;
 import com.ibm.watson.developer_cloud.natural_language_classifier.v1.model.Classifier;
+import com.ibm.watson.developer_cloud.natural_language_classifier.v1.model.Classifier.Status;
 
 /**
  * @author Souad
@@ -16,6 +17,24 @@ import com.ibm.watson.developer_cloud.natural_language_classifier.v1.model.Class
  */
 @Service
 public class WatsonNLCService {
+
+	/**
+	 * check if classifier status is available before use or not
+	 * 
+	 * @return true if status available,false otherwise
+	 * 
+	 */
+	public boolean isClassifierAvaiable() {
+
+		NaturalLanguageClassifier service = new NaturalLanguageClassifier();
+		service.setUsernameAndPassword(NLCServiceConstants.USER_NAME, NLCServiceConstants.PASSWORD);
+
+		Classifier classifier = service.getClassifier(NLCServiceConstants.CLASSIFIER_ID).execute();
+		if (classifier.getStatus() == Status.AVAILABLE)
+
+			return true;
+		return false;
+	}
 
 	/**
 	 * Find suitable classifier for asked question from trained data by call NLC

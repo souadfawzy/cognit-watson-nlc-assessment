@@ -2,6 +2,7 @@ package com.cognit.watson.nlc.CognitWatsonAssessment;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,5 +68,17 @@ public class CognitWatsonAssessmentApplicationTests {
 	public void shouldReturnClassifierCreatedId() throws Exception {
 		
 		//watsonNLCservice.createClassifier("NLC-tes","");
+	}
+	
+	/**
+	 * check classifier status
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldReturnTrueIfClassifierAvailable() throws Exception {
+		
+		boolean classifierStatus=watsonNLCservice.isClassifierAvaiable();
+		assertTrue(classifierStatus);
 	}
 }
