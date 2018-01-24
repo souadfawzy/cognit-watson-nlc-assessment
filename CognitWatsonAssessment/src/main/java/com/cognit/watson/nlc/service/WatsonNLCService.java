@@ -2,9 +2,11 @@ package com.cognit.watson.nlc.service;
 
 import java.io.File;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Service;
 
-import com.cognit.watson.nlc.constants.NLCServiceConstants;
 import com.cognit.watson.nlc.utilities.Validator;
 import com.ibm.watson.developer_cloud.natural_language_classifier.v1.NaturalLanguageClassifier;
 import com.ibm.watson.developer_cloud.natural_language_classifier.v1.model.Classification;
@@ -18,6 +20,22 @@ import com.ibm.watson.developer_cloud.natural_language_classifier.v1.model.Class
 @Service
 public class WatsonNLCService {
 
+	/* classifier created and trained */
+	@Value("${service.classifier.id}")
+	private String classifierId;
+	@Value("${service.username}")
+	private String username;
+	@Value("${service.password}")
+	private String password;
+
+	private NaturalLanguageClassifier naturalLanguageClassifier;
+
+	private void authenticateService() {
+		naturalLanguageClassifier = new NaturalLanguageClassifier();
+		naturalLanguageClassifier.setUsernameAndPassword(username, password);
+
+	}
+
 	/**
 	 * check if classifier status is available before use or not
 	 * 
@@ -26,10 +44,10 @@ public class WatsonNLCService {
 	 */
 	public boolean isClassifierAvaiable() {
 
-		NaturalLanguageClassifier service = new NaturalLanguageClassifier();
-		service.setUsernameAndPassword(NLCServiceConstants.USER_NAME, NLCServiceConstants.PASSWORD);
+		if (naturalLanguageClassifier == null)
+			authenticateService();
 
-		Classifier classifier = service.getClassifier(NLCServiceConstants.CLASSIFIER_ID).execute();
+		Classifier classifier = naturalLanguageClassifier.getClassifier(classifierId).execute();
 		if (classifier.getStatus() == Status.AVAILABLE)
 
 			return true;
@@ -51,14 +69,14 @@ public class WatsonNLCService {
 			 * Instantiates a new natural language service by username and
 			 * password service credentials
 			 */
-			NaturalLanguageClassifier service = new NaturalLanguageClassifier();
-			service.setUsernameAndPassword(NLCServiceConstants.USER_NAME, NLCServiceConstants.PASSWORD);
+			if (naturalLanguageClassifier == null)
+				authenticateService();
 			/*
 			 * Returns classification Details for a question as JSON but only we
 			 * need topclass value
 			 */
-			Classification classification = service.classify(NLCServiceConstants.CLASSIFIER_ID, textToClassify)
-					.execute();
+			Classification classification = naturalLanguageClassifier.classify(classifierId, textToClassify).execute();
+			System.err.println(classification);
 			if (classification != null && !Validator.isEmptyOrNull(classification.getTopClass())) {
 				return classification.getTopClass();
 			}
@@ -80,11 +98,11 @@ public class WatsonNLCService {
 
 		if (!Validator.isEmptyOrNull(classifierName) && !Validator.isEmptyOrNull(trainingFilePath)) {
 
-			NaturalLanguageClassifier service = new NaturalLanguageClassifier();
-			service.setUsernameAndPassword(NLCServiceConstants.USER_NAME, NLCServiceConstants.PASSWORD);
+			if (naturalLanguageClassifier == null)
+				authenticateService();
 
-			Classifier classifier = service.createClassifier(classifierName, "en", new File(trainingFilePath))
-					.execute();
+			Classifier classifier = naturalLanguageClassifier
+					.createClassifier(classifierName, "en", new File(trainingFilePath)).execute();
 			if (classifier != null) {
 				return classifier.getId();
 			}
@@ -102,9 +120,14 @@ public class WatsonNLCService {
 	 */
 	public void deleteClassifier(String classifierId) throws Exception {
 		if (!Validator.isEmptyOrNull(classifierId)) {
-			NaturalLanguageClassifier service = new NaturalLanguageClassifier();
-			service.setUsernameAndPassword(NLCServiceConstants.USER_NAME, NLCServiceConstants.PASSWORD);
-			service.deleteClassifier(classifierId);
+			if (naturalLanguageClassifier == null)
+				authenticateService();
+			naturalLanguageClassifier.deleteClassifier(classifierId);
 		}
+	}
+
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
+		return new PropertySourcesPlaceholderConfigurer();
 	}
 }
